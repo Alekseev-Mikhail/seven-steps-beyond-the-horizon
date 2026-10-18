@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using System.Linq;
-using Encounter.Card;
 using Encounter.Card.Factory;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,27 +9,30 @@ namespace Encounter.TurnTakers
 {
     public class EncounterEnemy : TurnTaker
     {
-        protected override ICardFactory CardFactory => EnemyCardFactory.Instance;
-
         public readonly UnityEvent<TurnTakerData> OnSelectedEvent = new();
+        protected override ICardFactory CardFactory => EnemyCardFactory.Instance;
+        private List<EncounterEnemy> _enemies;
+        private List<TurnTaker> _playerCrew;
 
-        private EncounterSelectionManager _selectionManager;
         private float _startTime;
-        private bool _isTurning;
-        
-        public void SetSelectionManager(EncounterSelectionManager selectionManager)
+        private bool _isItsTurn;
+
+        public void SetTurnTakers(List<EncounterEnemy> enemies, List<TurnTaker> playerCrew)
         {
-            _selectionManager = selectionManager;
+            _enemies = enemies;
+            _playerCrew = playerCrew;
         }
         
         private void FixedUpdate()
         {
-            if (!_isTurning) return;
+            if (!_isItsTurn) return;
             if (Time.time - _startTime < 1f) return;
 
-            _isTurning = false;
-            _selectionManager.OnSelectedEvent.AddListener(PlayCard);
-            _selectionManager.StartSelection(TargetSelectionType.PlayerCrewSingle);
+            // TODO: remove this
+            Debug.Log("ENEMY TURN! end");
+            Hand.Cards.First().Play(new[] { _playerCrew.First().Data });
+
+            _isItsTurn = false;
             OnFinishedEvent.Invoke(this);
         }
 
@@ -37,18 +40,10 @@ namespace Encounter.TurnTakers
         {
             OnSelectedEvent.Invoke(Data);
         }
-        
-        private void PlayCard(TurnTakerData[] data)
-        {
-            // TODO: remove this
-            Debug.Log("ENEMY TURN! end");
-            Hand.Cards.First().Play(data);
-            _selectionManager.OnSelectedEvent.RemoveListener(PlayCard);
-        }
-        
+
         protected override void OnStartTurn()
         {
-            _isTurning = true;
+            _isItsTurn = true;
             _startTime = Time.time;
         }
 
