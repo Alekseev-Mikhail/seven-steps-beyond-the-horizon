@@ -5,8 +5,8 @@ namespace Encounter.EditorOnly
 {
     public class EncounterInitializer : MonoBehaviour
     {
-        [SerializeField] private CreatureData playerData;
-        [SerializeField] private CreatureData[] enemyData;
+        [SerializeField] private TurnTakerData playerData;
+        [SerializeField] private TurnTakerData[] enemyData;
 
         public void Init()
         {

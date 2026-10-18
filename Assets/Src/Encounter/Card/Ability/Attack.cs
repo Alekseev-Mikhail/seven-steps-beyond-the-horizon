@@ -10,7 +10,7 @@ namespace Encounter.Card.Ability
         public CardAbilityType Type => CardAbilityType.Attack;
         public TargetSelectionType SelectionType => TargetSelectionType.EnemyCrewSingle;
 
-        public void Play(CreatureData[] targets)
+        public void Play(TurnTakerData[] targets)
         {
             var target = targets[0];
             target.AlterHealth(-5);

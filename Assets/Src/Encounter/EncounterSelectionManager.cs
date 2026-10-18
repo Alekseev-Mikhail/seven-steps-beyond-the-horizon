@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Encounter.Card;
 using Encounter.TurnTakers;
@@ -10,12 +11,12 @@ namespace Encounter
 {
     public class EncounterSelectionManager : MonoBehaviour
     {
-        private EncounterEnemy[] _enemies;
+        private List<EncounterEnemy> _enemies;
         private EncounterPlayer _player;
         public bool IsSelectionStarted { get; private set; }
-        public readonly UnityEvent<CreatureData[]> OnSelectedEvent = new();
+        public readonly UnityEvent<TurnTakerData[]> OnSelectedEvent = new();
 
-        public void Init(EncounterEnemy[] enemies, EncounterPlayer player)
+        public void Init(List<EncounterEnemy> enemies, EncounterPlayer player)
         {
             if (_enemies != null || _player != null) throw new Exception("Multiple initialization");
             _enemies = enemies;
@@ -51,7 +52,7 @@ namespace Encounter
             OnSelectedEvent.Invoke(null);
         }
 
-        private void OnSelected(CreatureData data)
+        private void OnSelected(TurnTakerData data)
         {
             if (!IsSelectionStarted) return;
 

@@ -7,6 +7,6 @@ namespace Encounter.Card.Ability
         CardAbilityType Type { get; }
         TargetSelectionType SelectionType { get; }
         
-        public void Play(CreatureData[] targets);
+        public void Play(TurnTakerData[] targets);
     }
 }

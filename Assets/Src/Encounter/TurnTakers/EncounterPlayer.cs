@@ -5,24 +5,14 @@ using UnityEngine;
 
 namespace Encounter.TurnTakers
 {
-    public sealed class EncounterPlayer : TurnTakers.TurnTaker
+    public sealed class EncounterPlayer : TurnTaker
     {
+        [SerializeField] private EndTurnButton endTurnButton;
         protected override ICardFactory CardFactory => PlayerCardFactory.Instance;
-        
-        private EndTurnButton _endTurnButton;
-
-        private void Awake()
-        {
-            var obj = GameObject.FindWithTag("EndTurnButton");
-            if (obj == null) throw new Exception("End turn button not found");
-            
-            _endTurnButton = obj.GetComponent<EndTurnButton>();
-            if (_endTurnButton == null) throw new Exception("End turn button does not have the component");
-        }
 
         protected override void OnInit()
         {
-            _endTurnButton.OnEndTurn.AddListener(OnEndTurn);
+            endTurnButton.OnEndTurn.AddListener(OnEndTurn);
             Hand.OnCardPlayedEvent.AddListener(OnCardPlayed);
         }
 
@@ -38,7 +28,7 @@ namespace Encounter.TurnTakers
         private void OnEndTurn()
         {
             SetIsCardsVisible(false);
-            OnFinishedEvent.Invoke();
+            OnFinishedEvent.Invoke(this);
         }
 
         private void OnCardPlayed(BaseCard card)
@@ -51,6 +41,7 @@ namespace Encounter.TurnTakers
         {
             for (var i = 0; i < Hand.Cards.Length; i++)
             {
+                // TODO: refactor
                 Hand.Cards[i].transform.position = new Vector3(i * 3f - 7, -2, -2);
             }
         }
@@ -61,7 +52,7 @@ namespace Encounter.TurnTakers
             {
                 card.gameObject.SetActive(isVisible);
             }
-            _endTurnButton.gameObject.SetActive(isVisible);
+            endTurnButton.gameObject.SetActive(isVisible);
         }
     }
 }

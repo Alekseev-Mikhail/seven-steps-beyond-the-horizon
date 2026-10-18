@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Encounter.Card;
 using Encounter.Card.Factory;
 using Encounter.EditorOnly;
@@ -14,8 +15,10 @@ namespace Encounter
         [SerializeField] private CardPrefabStorage cardPrefabStorage;
         [SerializeField] private EncounterSelectionManager selectionManager;
         [SerializeField] private GameObject enemyPrefab;
-        private List<TurnTaker> _turnTakers;
-        private int _currentTurnTaker;
+        [SerializeField] private EncounterPlayer player;
+
+        private List<EncounterEnemy> _enemies;
+        private List<TurnTaker> _playerCrew;
 
         private void Awake()
         {
@@ -24,76 +27,107 @@ namespace Encounter
             if (GameManager.EncounterEnemies == null || GameManager.EncounterEnemies.Length == 0)
                 throw new Exception("No enemy in encounter");
 
-            _turnTakers = new List<TurnTaker>(GameManager.EncounterEnemies.Length + 1);
+            _enemies = new List<EncounterEnemy>(GameManager.EncounterEnemies.Length);
+            _playerCrew = new List<TurnTaker>(1);
 
-            var playerObj = new GameObject("Player");
-            var player = playerObj.AddComponent<EncounterPlayer>();
-            player.OnDeathEvent.AddListener(OnDefeat);
-            _turnTakers.Add(player);
+            InitEnemies();
 
-            var enemies = InitEnemies();
-
-            selectionManager.Init(enemies, player);
+            selectionManager.Init(_enemies, player);
             PlayerCardFactory.Init(cardPrefabStorage, selectionManager);
 
             player.Init(GameManager.PlayerData);
+            player.OnDeathEvent.AddListener(OnPlayerCrewMemberDeath);
+            _playerCrew.Add(player);
         }
 
-        private EncounterEnemy[] InitEnemies()
+        private void InitEnemies()
         {
-            var enemies = new EncounterEnemy[GameManager.EncounterEnemies.Length];
             for (var i = 0; i < GameManager.EncounterEnemies.Length; i++)
             {
                 var enemyObj = Instantiate(enemyPrefab);
                 var enemy = enemyObj.AddComponent<EncounterEnemy>();
 
                 enemyObj.name = "Enemy " + i;
+                // TODO: refactor
                 enemyObj.transform.position = new Vector3(i * 3f - 7, 2, -2);
 
                 enemy.Init(GameManager.EncounterEnemies[i]);
                 enemy.SetSelectionManager(selectionManager);
                 enemy.OnDeathEvent.AddListener(OnEnemyDeath);
 
-                enemies[i] = enemy;
-                _turnTakers.Add(enemy);
+                _enemies.Add(enemy);
             }
-
-            return enemies;
         }
 
         private void Start()
         {
-            _turnTakers[_currentTurnTaker].OnFinishedEvent.AddListener(OnTurnFinished);
-            _turnTakers[_currentTurnTaker].StartTurn();
+            IncreaseReadinessUntilReady();
         }
 
-        private void OnTurnFinished()
+        private void IncreaseReadinessUntilReady()
         {
-            _turnTakers[_currentTurnTaker].OnFinishedEvent.RemoveListener(OnTurnFinished);
+            while (true)
+            {
+                _playerCrew.ForEach(turnTaker => turnTaker.Data.GetReadyToAttack());
+                _enemies.ForEach(turnTaker => turnTaker.Data.GetReadyToAttack());
 
-            _currentTurnTaker++;
-            if (_currentTurnTaker >= _turnTakers.Count) _currentTurnTaker = 0;
-
-            _turnTakers[_currentTurnTaker].OnFinishedEvent.AddListener(OnTurnFinished);
-            _turnTakers[_currentTurnTaker].StartTurn();
+                var turnTaker = FindReadyTurnTaker();
+                if (turnTaker == null) continue;
+                StartTurn(turnTaker);
+                break;
+            }
         }
 
+        private TurnTaker FindReadyTurnTaker()
+        {
+            foreach (var turnTaker in _playerCrew.Where(turnTaker => turnTaker.Data.IsReady))
+            {
+                return turnTaker;
+            }
+
+            return _enemies.FirstOrDefault(turnTaker => turnTaker.Data.IsReady);
+        }
+
+        private void OnTurnFinished(TurnTaker previousTurnTaker)
+        {
+            previousTurnTaker.OnFinishedEvent.RemoveListener(OnTurnFinished);
+            
+            var turnTaker = FindReadyTurnTaker();
+            if (turnTaker == null)
+            {
+                IncreaseReadinessUntilReady();
+                return;
+            }
+            StartTurn(turnTaker);
+        }
+
+        private void StartTurn(TurnTaker turnTaker)
+        {
+            turnTaker.Data.ResetReadiness();
+            turnTaker.OnFinishedEvent.AddListener(OnTurnFinished);
+            turnTaker.StartTurn();
+        }
+        
         private void OnEnemyDeath(TurnTaker turnTaker)
         {
-            if (_turnTakers.Count == 2) OnVictory();
-            
-            var index = _turnTakers.IndexOf(turnTaker);
-            if (_currentTurnTaker >= index) _currentTurnTaker--;
-            _turnTakers.RemoveAt(index);
+            if (turnTaker is not EncounterEnemy enemy) return;
+            _enemies.Remove(enemy);
+            if (_enemies.Count == 0) CompleteEncounter(true);
         }
-
-        private void OnVictory()
+        
+        private void OnPlayerCrewMemberDeath(TurnTaker member)
         {
-            Debug.Log("Victory");
+            _playerCrew.Remove(member);
+            if (_playerCrew.Count == 0) CompleteEncounter(false);
         }
-
-        private void OnDefeat(TurnTaker turnTaker)
+        
+        private void CompleteEncounter(bool didPlayerWin)
         {
+            if (didPlayerWin)
+            {
+                Debug.Log("Victory");
+                return;
+            }
             Debug.Log("Game over");
         }
     }

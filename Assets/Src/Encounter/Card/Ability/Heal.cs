@@ -10,7 +10,7 @@ namespace Encounter.Card.Ability
         public CardAbilityType Type => CardAbilityType.Heal;
         public TargetSelectionType SelectionType => TargetSelectionType.PlayerCrewSingle;
 
-        public void Play(CreatureData[] targets)
+        public void Play(TurnTakerData[] targets)
         {
             var target = targets[0];
             target.AlterHealth(1);

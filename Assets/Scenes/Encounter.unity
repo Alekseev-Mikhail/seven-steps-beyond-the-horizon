@@ -152,6 +152,7 @@ MonoBehaviour:
   cardPrefabStorage: {fileID: 11400000, guid: 56e72f4f10cc540efadcad203abca64c, type: 2}
   selectionManager: {fileID: 2044181676}
   enemyPrefab: {fileID: 1432626730999150374, guid: 5cd17ce4456204257bd3e0b03d67046d, type: 3}
+  player: {fileID: 1427312621}
 --- !u!4 &883764637
 Transform:
   m_ObjectHideFlags: 0
@@ -569,6 +570,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1427312620
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1427312622}
+  - component: {fileID: 1427312621}
+  m_Layer: 0
+  m_Name: Player
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1427312621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427312620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f779a7b9049444c80d723aa3a7bf1de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MainAssembly::Encounter.TurnTakers.EncounterPlayer
+  endTurnButton: {fileID: 1493449841}
+--- !u!4 &1427312622
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427312620}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.08951, y: -0.34363, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1493449838
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,6 +818,7 @@ MonoBehaviour:
     health: 100
     maxHealth: 1000
     handCapacity: 2
+    agility: 1
     gear:
     - rid: 307378757969117263
     - rid: 307378757969117264
@@ -779,18 +826,15 @@ MonoBehaviour:
   - health: 5
     maxHealth: 5
     handCapacity: 2
+    agility: 0.5
     gear:
     - rid: 307378757969117265
   - health: 5
     maxHealth: 5
     handCapacity: 2
+    agility: 0.5
     gear:
     - rid: 307378757969117267
-  - health: 5
-    maxHealth: 5
-    handCapacity: 2
-    gear:
-    - rid: 307378757969117268
   references:
     version: 2
     RefIds:
@@ -804,9 +848,6 @@ MonoBehaviour:
       type: {class: Sword, ns: Encounter.Gear, asm: MainAssembly}
       data: 
     - rid: 307378757969117267
-      type: {class: Sword, ns: Encounter.Gear, asm: MainAssembly}
-      data: 
-    - rid: 307378757969117268
       type: {class: Sword, ns: Encounter.Gear, asm: MainAssembly}
       data: 
 --- !u!1 &2044181674
@@ -861,6 +902,7 @@ SceneRoots:
   - {fileID: 1878737903}
   - {fileID: 2044181675}
   - {fileID: 883764637}
-  - {fileID: 954070982}
+  - {fileID: 1427312622}
   - {fileID: 1493449840}
+  - {fileID: 954070982}
   - {fileID: 995321988}

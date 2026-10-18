@@ -8,14 +8,14 @@ namespace Encounter.TurnTakers
 {
     public abstract class TurnTaker : MonoBehaviour
     {
-        public CreatureData Data { get; private set; }
+        public TurnTakerData Data { get; private set; }
         protected Hand Hand { get; private set; }
         protected abstract ICardFactory CardFactory { get; }
 
-        public readonly UnityEvent OnFinishedEvent = new();
+        public readonly UnityEvent<TurnTaker> OnFinishedEvent = new();
         public readonly UnityEvent<TurnTaker> OnDeathEvent = new();
 
-        public void Init(CreatureData data)
+        public void Init(TurnTakerData data)
         {
             if (Data != null) throw new Exception("Multiple initialization");
 

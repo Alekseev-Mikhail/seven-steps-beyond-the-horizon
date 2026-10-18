@@ -27,7 +27,7 @@ namespace Encounter.Card
             Debug.Log("pressed");
         }
 
-        public override void Play(CreatureData[] data)
+        public override void Play(TurnTakerData[] data)
         {
             _selectionManager.OnSelectedEvent.RemoveListener(Play);
             if (data == null) return;

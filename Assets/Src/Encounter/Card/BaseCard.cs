@@ -17,7 +17,7 @@ namespace Encounter.Card
             Ability = ability;
         }   
 
-        public virtual void Play(CreatureData[] data)
+        public virtual void Play(TurnTakerData[] data)
         {
             OnCardPlayedEvent.Invoke(this);
         }

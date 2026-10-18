@@ -11,7 +11,7 @@ namespace Encounter.TurnTakers
     {
         protected override ICardFactory CardFactory => EnemyCardFactory.Instance;
 
-        public readonly UnityEvent<CreatureData> OnSelectedEvent = new();
+        public readonly UnityEvent<TurnTakerData> OnSelectedEvent = new();
 
         private EncounterSelectionManager _selectionManager;
         private float _startTime;
@@ -30,7 +30,7 @@ namespace Encounter.TurnTakers
             _isTurning = false;
             _selectionManager.OnSelectedEvent.AddListener(PlayCard);
             _selectionManager.StartSelection(TargetSelectionType.PlayerCrewSingle);
-            OnFinishedEvent.Invoke();
+            OnFinishedEvent.Invoke(this);
         }
 
         private void OnMouseDown()
@@ -38,7 +38,7 @@ namespace Encounter.TurnTakers
             OnSelectedEvent.Invoke(Data);
         }
         
-        private void PlayCard(CreatureData[] data)
+        private void PlayCard(TurnTakerData[] data)
         {
             // TODO: remove this
             Debug.Log("ENEMY TURN! end");
