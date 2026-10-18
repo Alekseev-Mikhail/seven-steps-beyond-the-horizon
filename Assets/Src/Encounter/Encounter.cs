@@ -52,7 +52,7 @@ namespace Encounter
                 enemyObj.transform.position = new Vector3(i * 3f - 7, 2, -2);
 
                 enemy.Init(GameManager.EncounterEnemies[i]);
-                enemy.SetSelectionManager(selectionManager);
+                enemy.SetTurnTakers(_enemies, _playerCrew);
                 enemy.OnDeathEvent.AddListener(OnEnemyDeath);
 
                 _enemies.Add(enemy);

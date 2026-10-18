@@ -818,7 +818,7 @@ MonoBehaviour:
     health: 100
     maxHealth: 1000
     handCapacity: 2
-    agility: 1
+    agility: 0.5
     gear:
     - rid: 307378757969117263
     - rid: 307378757969117264
